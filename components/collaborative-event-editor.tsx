@@ -1,30 +1,8 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { ChevronDownIcon, Users, Link, Share2 } from "lucide-react";
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
+import { Users, Share2 } from "lucide-react";
 import {
   useMyPresence,
   useOthers,
@@ -42,7 +20,6 @@ import { CollaborativeTimetableItem } from "@/components/collaborative-timetable
 import { EventForm } from "@/components/event-form";
 import { TimetableList } from "@/components/timetable-list";
 import { saveEventDataToStorage } from "@/lib/eventStorage";
-import { useRouter } from "next/navigation";
 
 function generateId() {
   return Math.random().toString(36).slice(2, 10);
@@ -65,7 +42,6 @@ function combineDateAndTime(
 export function CollaborativeEventEditor() {
   const [myPresence, updateMyPresence] = useMyPresence();
   const others = useOthers();
-  const router = useRouter();
 
   // Liveblocksストレージからデータを取得
   const eventName = useStorage((root) => root.eventName);
@@ -191,31 +167,28 @@ export function CollaborativeEventEditor() {
     setItemDuration("0");
   };
 
-  // DnD sensors
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
-
   // DnD handler
-  function handleDragEnd(event: any) {
-    const { active, over } = event;
+  function handleDragEnd(event: unknown) {
+    const { active, over } = event as import("@dnd-kit/core").DragEndEvent;
     // Clear dragging state
     updateMyPresence({ draggingItemId: null });
-    if (active.id !== over?.id) {
+    if (over && active.id !== over.id) {
       const itemsArray = items || [];
-      const oldIndex = itemsArray.findIndex((i: any) => i.id === active.id);
-      const newIndex = itemsArray.findIndex((i: any) => i.id === over.id);
+      const oldIndex = itemsArray.findIndex(
+        (i: { id: string }) => i.id === active.id
+      );
+      const newIndex = itemsArray.findIndex(
+        (i: { id: string }) => i.id === over.id
+      );
       reorderItems({ oldIndex, newIndex });
     }
   }
 
   // DnD: Set dragging state
-  function handleDragStart(event: any) {
-    if (event.active?.id) {
-      updateMyPresence({ draggingItemId: String(event.active.id) });
+  function handleDragStart(event: unknown) {
+    const dragEvent = event as import("@dnd-kit/core").DragStartEvent;
+    if (dragEvent.active?.id) {
+      updateMyPresence({ draggingItemId: String(dragEvent.active.id) });
     }
   }
 

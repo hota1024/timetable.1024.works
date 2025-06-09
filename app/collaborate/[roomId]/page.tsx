@@ -1,5 +1,5 @@
 "use client";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { RoomProvider } from "@/lib/liveblocks";
 import { CollaborativeEventEditor } from "@/components/collaborative-event-editor";
 import { ClientSideSuspenseWrapper } from "@/components/client-side-suspense-wrapper";
@@ -11,7 +11,6 @@ function generateId() {
 
 export default function CollaboratePage() {
   const params = useParams();
-  const router = useRouter();
   const searchParams = useSearchParams();
   const roomId = typeof params.roomId === "string" ? params.roomId : "";
 

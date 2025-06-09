@@ -1,6 +1,5 @@
 import { createClient } from "@liveblocks/client";
 import { createRoomContext } from "@liveblocks/react";
-import type { EventData } from "@/models/event";
 
 // Liveblocksクライアントを作成
 const client = createClient({
@@ -41,7 +40,10 @@ type UserMeta = {
 };
 
 // ルームイベントの型定義
-type RoomEvent = {};
+type RoomEvent = {
+  type: string;
+  [key: string]: string | number | boolean | null;
+};
 
 // ルームコンテキストを作成してエクスポート
 export const {

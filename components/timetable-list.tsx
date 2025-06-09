@@ -19,8 +19,8 @@ export interface TimetableListProps {
   time: string;
   onRemove: (id: string) => void;
   onEdit: (id: string, name: string, duration: number) => void;
-  onDragEnd: (event: any) => void;
-  onDragStart?: (event: any) => void;
+  onDragEnd: (event: unknown) => void;
+  onDragStart?: (event: unknown) => void;
   ItemComponent: React.ComponentType<{
     item: TimetableItem;
     idx: number;

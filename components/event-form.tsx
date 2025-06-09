@@ -8,7 +8,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { ChevronDownIcon } from "lucide-react";
-import { useState } from "react";
 import {
   Tooltip,
   TooltipTrigger,
@@ -31,19 +30,19 @@ export interface EventFormProps {
   setDatePopoverOpen: (v: boolean) => void;
   onNameFocus?: () => void;
   onNameBlur?: () => void;
-  nameFocusUsers?: any[];
+  nameFocusUsers?: unknown[];
   onDateFocus?: () => void;
   onDateBlur?: () => void;
-  dateFocusUsers?: any[];
+  dateFocusUsers?: unknown[];
   onTimeFocus?: () => void;
   onTimeBlur?: () => void;
-  timeFocusUsers?: any[];
+  timeFocusUsers?: unknown[];
   onItemNameFocus?: () => void;
   onItemNameBlur?: () => void;
-  itemNameFocusUsers?: any[];
+  itemNameFocusUsers?: unknown[];
   onItemDurationFocus?: () => void;
   onItemDurationBlur?: () => void;
-  itemDurationFocusUsers?: any[];
+  itemDurationFocusUsers?: unknown[];
 }
 
 export function EventForm({
@@ -90,25 +89,30 @@ export function EventForm({
             onBlur={onNameBlur}
           />
           {/* Avatars for event name focus */}
-          {nameFocusUsers && nameFocusUsers.length > 0 && (
-            <div className="absolute -top-3 -right-3 flex space-x-1">
-              {nameFocusUsers.map((user, idx) => (
-                <Tooltip key={idx}>
-                  <TooltipTrigger asChild>
-                    <div
-                      className="w-6 h-6 rounded-full border-2 border-white flex items-center justify-center text-xs font-medium"
-                      style={{ backgroundColor: user.color || "#ccc" }}
-                    >
-                      {user.userName?.charAt(0) || "?"}
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    {user.userName || "匿名ユーザー"}
-                  </TooltipContent>
-                </Tooltip>
-              ))}
-            </div>
-          )}
+          {(nameFocusUsers || []).map((user, i) => (
+            <Tooltip key={i}>
+              <TooltipTrigger asChild>
+                <div className="absolute -top-3 -right-3 flex space-x-1">
+                  <div
+                    className="w-6 h-6 rounded-full border-2 border-white flex items-center justify-center text-xs font-medium"
+                    style={{
+                      backgroundColor:
+                        (user as { userName?: string; color?: string }).color ||
+                        "#ccc",
+                    }}
+                  >
+                    {(
+                      user as { userName?: string; color?: string }
+                    ).userName?.charAt(0) || "?"}
+                  </div>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                {(user as { userName?: string; color?: string }).userName ||
+                  "匿名ユーザー"}
+              </TooltipContent>
+            </Tooltip>
+          ))}
         </div>
       </div>
       <div className="flex flex-col gap-2">
@@ -129,25 +133,30 @@ export function EventForm({
                     <ChevronDownIcon />
                   </Button>
                   {/* Avatars for date focus */}
-                  {dateFocusUsers && dateFocusUsers.length > 0 && (
-                    <div className="absolute -top-3 -right-3 flex space-x-1">
-                      {dateFocusUsers.map((user, idx) => (
-                        <Tooltip key={idx}>
-                          <TooltipTrigger asChild>
-                            <div
-                              className="w-6 h-6 rounded-full border-2 border-white flex items-center justify-center text-xs font-medium"
-                              style={{ backgroundColor: user.color || "#ccc" }}
-                            >
-                              {user.userName?.charAt(0) || "?"}
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            {user.userName || "匿名ユーザー"}
-                          </TooltipContent>
-                        </Tooltip>
-                      ))}
-                    </div>
-                  )}
+                  {(dateFocusUsers || []).map((user, i) => (
+                    <Tooltip key={i}>
+                      <TooltipTrigger asChild>
+                        <div className="absolute -top-3 -right-3 flex space-x-1">
+                          <div
+                            className="w-6 h-6 rounded-full border-2 border-white flex items-center justify-center text-xs font-medium"
+                            style={{
+                              backgroundColor:
+                                (user as { userName?: string; color?: string })
+                                  .color || "#ccc",
+                            }}
+                          >
+                            {(
+                              user as { userName?: string; color?: string }
+                            ).userName?.charAt(0) || "?"}
+                          </div>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        {(user as { userName?: string; color?: string })
+                          .userName || "匿名ユーザー"}
+                      </TooltipContent>
+                    </Tooltip>
+                  ))}
                 </div>
               </PopoverTrigger>
               <PopoverContent
@@ -179,25 +188,30 @@ export function EventForm({
               onBlur={onTimeBlur}
             />
             {/* Avatars for time focus */}
-            {timeFocusUsers && timeFocusUsers.length > 0 && (
-              <div className="absolute -top-3 -right-3 flex space-x-1">
-                {timeFocusUsers.map((user, idx) => (
-                  <Tooltip key={idx}>
-                    <TooltipTrigger asChild>
-                      <div
-                        className="w-6 h-6 rounded-full border-2 border-white flex items-center justify-center text-xs font-medium"
-                        style={{ backgroundColor: user.color || "#ccc" }}
-                      >
-                        {user.userName?.charAt(0) || "?"}
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      {user.userName || "匿名ユーザー"}
-                    </TooltipContent>
-                  </Tooltip>
-                ))}
-              </div>
-            )}
+            {(timeFocusUsers || []).map((user, i) => (
+              <Tooltip key={i}>
+                <TooltipTrigger asChild>
+                  <div className="absolute -top-3 -right-3 flex space-x-1">
+                    <div
+                      className="w-6 h-6 rounded-full border-2 border-white flex items-center justify-center text-xs font-medium"
+                      style={{
+                        backgroundColor:
+                          (user as { userName?: string; color?: string })
+                            .color || "#ccc",
+                      }}
+                    >
+                      {(
+                        user as { userName?: string; color?: string }
+                      ).userName?.charAt(0) || "?"}
+                    </div>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {(user as { userName?: string; color?: string }).userName ||
+                    "匿名ユーザー"}
+                </TooltipContent>
+              </Tooltip>
+            ))}
           </div>
         </div>
       </div>
@@ -215,25 +229,30 @@ export function EventForm({
               onBlur={onItemNameBlur}
             />
             {/* Avatars for item name focus */}
-            {itemNameFocusUsers && itemNameFocusUsers.length > 0 && (
-              <div className="absolute -top-3 -right-3 flex space-x-1">
-                {itemNameFocusUsers.map((user, idx) => (
-                  <Tooltip key={idx}>
-                    <TooltipTrigger asChild>
-                      <div
-                        className="w-6 h-6 rounded-full border-2 border-white flex items-center justify-center text-xs font-medium"
-                        style={{ backgroundColor: user.color || "#ccc" }}
-                      >
-                        {user.userName?.charAt(0) || "?"}
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      {user.userName || "匿名ユーザー"}
-                    </TooltipContent>
-                  </Tooltip>
-                ))}
-              </div>
-            )}
+            {(itemNameFocusUsers || []).map((user, i) => (
+              <Tooltip key={i}>
+                <TooltipTrigger asChild>
+                  <div className="absolute -top-3 -right-3 flex space-x-1">
+                    <div
+                      className="w-6 h-6 rounded-full border-2 border-white flex items-center justify-center text-xs font-medium"
+                      style={{
+                        backgroundColor:
+                          (user as { userName?: string; color?: string })
+                            .color || "#ccc",
+                      }}
+                    >
+                      {(
+                        user as { userName?: string; color?: string }
+                      ).userName?.charAt(0) || "?"}
+                    </div>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {(user as { userName?: string; color?: string }).userName ||
+                    "匿名ユーザー"}
+                </TooltipContent>
+              </Tooltip>
+            ))}
           </div>
           <div className="flex items-center gap-1 relative">
             <Button
@@ -267,25 +286,30 @@ export function EventForm({
                 onBlur={onItemDurationBlur}
               />
               {/* Avatars for item duration focus */}
-              {itemDurationFocusUsers && itemDurationFocusUsers.length > 0 && (
-                <div className="absolute -top-3 -right-3 flex space-x-1">
-                  {itemDurationFocusUsers.map((user, idx) => (
-                    <Tooltip key={idx}>
-                      <TooltipTrigger asChild>
-                        <div
-                          className="w-6 h-6 rounded-full border-2 border-white flex items-center justify-center text-xs font-medium"
-                          style={{ backgroundColor: user.color || "#ccc" }}
-                        >
-                          {user.userName?.charAt(0) || "?"}
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        {user.userName || "匿名ユーザー"}
-                      </TooltipContent>
-                    </Tooltip>
-                  ))}
-                </div>
-              )}
+              {(itemDurationFocusUsers || []).map((user, i) => (
+                <Tooltip key={i}>
+                  <TooltipTrigger asChild>
+                    <div className="absolute -top-3 -right-3 flex space-x-1">
+                      <div
+                        className="w-6 h-6 rounded-full border-2 border-white flex items-center justify-center text-xs font-medium"
+                        style={{
+                          backgroundColor:
+                            (user as { userName?: string; color?: string })
+                              .color || "#ccc",
+                        }}
+                      >
+                        {(
+                          user as { userName?: string; color?: string }
+                        ).userName?.charAt(0) || "?"}
+                      </div>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {(user as { userName?: string; color?: string }).userName ||
+                      "匿名ユーザー"}
+                  </TooltipContent>
+                </Tooltip>
+              ))}
             </div>
             <Button
               type="button"

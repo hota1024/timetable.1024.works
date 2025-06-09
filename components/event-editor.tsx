@@ -3,22 +3,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { EventData, TimetableItem } from "@/models/event";
-import { ChevronDownIcon, GripVertical, Trash2, Users } from "lucide-react";
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+import { Users } from "lucide-react";
 import EventImportDialog from "@/components/event-import-dialog";
 import EventExportDialog from "@/components/event-export-dialog";
 import { useRouter } from "next/navigation";
@@ -75,7 +60,6 @@ export function EventEditor({
   const [itemName, setItemName] = useState("");
   const [itemDuration, setItemDuration] = useState("0");
   const [datePopoverOpen, setDatePopoverOpen] = useState(false);
-  const [editingItemId, setEditingItemId] = useState<string | null>(null);
   const [copiedTab, setCopiedTab] = useState<null | "json" | "markdown">(null);
   const [showTooltip, setShowTooltip] = useState<null | "json" | "markdown">(
     null
@@ -129,8 +113,8 @@ export function EventEditor({
     );
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = (_: React.FormEvent) => {
+    _.preventDefault();
     const startDate = combineDateAndTime(date, time);
     if (!name || !startDate || items.length === 0) return;
     onSubmit({
@@ -162,24 +146,6 @@ export function EventEditor({
     const encodedData = encodeURIComponent(JSON.stringify(currentData));
     router.push(`${collaborationUrl}?data=${encodedData}`);
   };
-
-  // DnD sensors
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
-
-  // DnD handler
-  function handleDragEnd(event: any) {
-    const { active, over } = event;
-    if (active.id !== over?.id) {
-      const oldIndex = items.findIndex((i) => i.id === active.id);
-      const newIndex = items.findIndex((i) => i.id === over.id);
-      setItems((items) => arrayMove(items, oldIndex, newIndex));
-    }
-  }
 
   return (
     <div className="w-full">
@@ -227,7 +193,7 @@ export function EventEditor({
                     setItems(data.items);
                     setImportDialogOpen(false);
                     setImportText("");
-                  } catch (e) {
+                  } catch {
                     setImportError("JSONのパースに失敗しました");
                   }
                 }}
@@ -305,8 +271,8 @@ export function EventEditor({
               time={time}
               onRemove={removeItem}
               onEdit={editItem}
-              onDragEnd={handleDragEnd}
               ItemComponent={SortableTimetableItem}
+              onDragEnd={() => {}}
             />
             <Button
               type="submit"

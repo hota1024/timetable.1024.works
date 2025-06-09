@@ -16,7 +16,7 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
-import { Download, Copy, Check, ArrowDownToLine } from "lucide-react";
+import { Download, Copy, Check } from "lucide-react";
 import { TimetableItem } from "@/models/event";
 
 export type EventExportDialogProps = {
@@ -73,11 +73,11 @@ const EventExportDialog: React.FC<EventExportDialogProps> = React.memo(
       [name, date, time, items]
     );
     const markdownText = React.useMemo(() => {
-      let result = [];
-      let base = combineDateAndTime(date, time);
+      const result = [];
+      const base = combineDateAndTime(date, time);
       let current = base ? new Date(base) : null;
       for (let i = 0; i < items.length; ++i) {
-        let start = current ? current.toTimeString().slice(0, 5) : "";
+        const start = current ? current.toTimeString().slice(0, 5) : "";
         result.push(
           `| ${start} | ${items[i].name} | ${items[i].durationInMinutes} |`
         );
