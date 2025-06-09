@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { EventData } from "@/models/event";
 import { loadEventDataFromStorage } from "@/lib/eventStorage";
-import { List, Grid2X2 } from "lucide-react";
+import { List, Grid2X2, Pencil } from "lucide-react";
 
 export default function Home() {
   const [events, setEvents] = useState<EventData[]>([]);
@@ -76,54 +76,71 @@ export default function Home() {
                 (sum, item) => sum + item.durationInMinutes,
                 0
               );
+              // 状態判定
+              const now = new Date();
+              const start = new Date(event.startDate);
+              const end = new Date(start.getTime() + totalDuration * 60000);
+              let statusText = "";
+              if (now < start) {
+                // 開催まであと〇〇日
+                const diffMs = start.getTime() - now.getTime();
+                const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+                if (diffDays === 1) {
+                  statusText = `開催まであと1日`;
+                } else if (diffDays > 1) {
+                  statusText = `開催まであと${diffDays}日`;
+                } else {
+                  // 24時間未満
+                  const diffHours = Math.ceil(diffMs / (1000 * 60 * 60));
+                  statusText = `開催まであと${diffHours}時間`;
+                }
+              } else if (now >= start && now <= end) {
+                statusText = "開催中";
+              } else {
+                statusText = "開催終了";
+              }
               return (
                 <Card
                   key={event.id}
                   className="relative rounded-2xl border border-border/40 bg-white/90 dark:bg-background/80 shadow-sm hover:shadow-lg transition-shadow p-0 overflow-hidden group"
                 >
-                  {/* 編集ボタンを右上に */}
-                  <Button
-                    asChild
-                    size="icon"
-                    variant="ghost"
-                    className="absolute top-3 right-3 z-10 opacity-70 hover:opacity-100"
-                  >
-                    <Link href={`/${event.id}`} aria-label="編集">
+                  <CardHeader className="pb-2 pt-6 px-6">
+                    <div className="flex flex-row items-center gap-1 justify-between">
+                      <span className="text-xl font-bold tracking-tight truncate">
+                        {event.name}
+                      </span>
+                      <Button
+                        asChild
+                        size="lg"
+                        variant="secondary"
+                        className="px-6 text-base ml-4"
+                      >
+                        <Link href={`/${event.id}`} aria-label="編集">
+                          <Pencil className="size-4 mr-2" />
+                          編集する
+                        </Link>
+                      </Button>
+                    </div>
+                    <span className="text-xs font-semibold text-primary/80 mt-1 block">
+                      {statusText}
+                    </span>
+                    <span className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
                       <svg
-                        width="20"
-                        height="20"
+                        width="16"
+                        height="16"
                         fill="none"
                         stroke="currentColor"
                         strokeWidth="1.5"
                         viewBox="0 0 24 24"
                       >
-                        <path d="M16.475 5.408l2.117 2.117a1.5 1.5 0 010 2.121l-8.485 8.485a2 2 0 01-.707.464l-3.536 1.178a.5.5 0 01-.632-.632l1.178-3.536a2 2 0 01.464-.707l8.485-8.485a1.5 1.5 0 012.121 0z"></path>
+                        <circle cx="12" cy="12" r="9" />
+                        <path d="M12 7v5l3 3" />
                       </svg>
-                    </Link>
-                  </Button>
-                  <CardHeader className="pb-2 pt-6 px-6">
-                    <div className="flex flex-col gap-1">
-                      <span className="text-xl font-bold tracking-tight truncate">
-                        {event.name}
-                      </span>
-                      <span className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
-                        <svg
-                          width="16"
-                          height="16"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle cx="12" cy="12" r="9" />
-                          <path d="M12 7v5l3 3" />
-                        </svg>
-                        {new Date(event.startDate).toLocaleString("ja-JP", {
-                          dateStyle: "medium",
-                          timeStyle: "short",
-                        })}
-                      </span>
-                    </div>
+                      {new Date(event.startDate).toLocaleString("ja-JP", {
+                        dateStyle: "medium",
+                        timeStyle: "short",
+                      })}
+                    </span>
                   </CardHeader>
                   <CardContent className="pt-0 pb-5 px-6">
                     <div className="flex gap-2 mt-2">
