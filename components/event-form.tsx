@@ -128,6 +128,7 @@ export function EventForm({
                     className="w-full sm:w-56 justify-between font-normal"
                     onFocus={onDateFocus}
                     onBlur={onDateBlur}
+                    type="button"
                   >
                     {date ? date.toLocaleDateString("ja-JP") : "日付を選択"}
                     <ChevronDownIcon />
