@@ -148,11 +148,31 @@ export function CollaborativeTimetableItem({
             onFocus={onNameFocus}
             onBlur={onNameBlur}
           />
-          {(nameFocusUsers || []).map((user, i) => (
-            <span key={i}>
-              {(user as { userName?: string; color?: string }).userName}
-            </span>
-          ))}
+          {/* Avatars for name focus */}
+          <div className="absolute -top-3 -right-3 flex space-x-1">
+            {(nameFocusUsers || []).map((user, i) => (
+              <Tooltip key={i}>
+                <TooltipTrigger asChild>
+                  <div
+                    className="w-6 h-6 rounded-full border-2 border-white flex items-center justify-center text-xs font-medium"
+                    style={{
+                      backgroundColor:
+                        (user as { userName?: string; color?: string }).color ||
+                        "#ccc",
+                    }}
+                  >
+                    {(
+                      user as { userName?: string; color?: string }
+                    ).userName?.charAt(0) || "?"}
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {(user as { userName?: string; color?: string }).userName ||
+                    "匿名ユーザー"}
+                </TooltipContent>
+              </Tooltip>
+            ))}
+          </div>
         </div>
         <div className="relative ml-2 min-w-[4.5rem] w-24">
           <Input
@@ -165,11 +185,31 @@ export function CollaborativeTimetableItem({
             onFocus={onDurationFocus}
             onBlur={onDurationBlur}
           />
-          {(durationFocusUsers || []).map((user, i) => (
-            <span key={i}>
-              {(user as { userName?: string; color?: string }).userName}
-            </span>
-          ))}
+          {/* Avatars for duration focus */}
+          <div className="absolute -top-3 -right-3 flex space-x-1">
+            {(durationFocusUsers || []).map((user, i) => (
+              <Tooltip key={i}>
+                <TooltipTrigger asChild>
+                  <div
+                    className="w-6 h-6 rounded-full border-2 border-white flex items-center justify-center text-xs font-medium"
+                    style={{
+                      backgroundColor:
+                        (user as { userName?: string; color?: string }).color ||
+                        "#ccc",
+                    }}
+                  >
+                    {(
+                      user as { userName?: string; color?: string }
+                    ).userName?.charAt(0) || "?"}
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {(user as { userName?: string; color?: string }).userName ||
+                    "匿名ユーザー"}
+                </TooltipContent>
+              </Tooltip>
+            ))}
+          </div>
         </div>
         <span className="ml-1 text-sm text-muted-foreground">分</span>
       </span>
