@@ -98,7 +98,6 @@ export function CollaborativeTimetableItem({
         transform: CSS.Transform.toString(transform),
         transition,
         opacity: isDragging ? 0.5 : 1,
-        background: isDragging ? "#f3f4f6" : undefined,
       }}
       className="flex items-center gap-4 justify-between rounded px-3 py-2 cursor-grab"
       {...attributes}
