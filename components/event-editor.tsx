@@ -10,6 +10,8 @@ import { useRouter } from "next/navigation";
 import SortableTimetableItem from "@/components/sortable-timetable-item";
 import { EventForm } from "@/components/event-form";
 import { TimetableList } from "@/components/timetable-list";
+import { arrayMove } from "@dnd-kit/sortable";
+import type { DragEndEvent } from "@dnd-kit/core";
 
 function generateId() {
   return Math.random().toString(36).slice(2, 10);
@@ -111,6 +113,17 @@ export function EventEditor({
         item.id === id ? { ...item, name, durationInMinutes: duration } : item
       )
     );
+  };
+
+  const handleDragEnd = (event: unknown) => {
+    const { active, over } = event as DragEndEvent;
+    if (!over || active.id === over.id) return;
+    setItems((items) => {
+      const oldIndex = items.findIndex((item) => item.id === active.id);
+      const newIndex = items.findIndex((item) => item.id === over.id);
+      if (oldIndex === -1 || newIndex === -1) return items;
+      return arrayMove(items, oldIndex, newIndex);
+    });
   };
 
   const handleSubmit = (_: React.FormEvent) => {
@@ -272,7 +285,7 @@ export function EventEditor({
               onRemove={removeItem}
               onEdit={editItem}
               ItemComponent={SortableTimetableItem}
-              onDragEnd={() => {}}
+              onDragEnd={handleDragEnd}
             />
             <Button
               type="submit"
