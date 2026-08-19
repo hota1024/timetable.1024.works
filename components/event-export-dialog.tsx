@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Download, Copy, Check } from "lucide-react";
 import { TimetableItem } from "@/models/event";
+import { formatEventMarkdown } from "@/lib/eventMarkdown";
 
 export type EventExportDialogProps = {
   open: boolean;
@@ -72,24 +73,15 @@ const EventExportDialog: React.FC<EventExportDialogProps> = React.memo(
         ),
       [name, date, time, items]
     );
-    const markdownText = React.useMemo(() => {
-      const result = [];
-      const base = combineDateAndTime(date, time);
-      let current = base ? new Date(base) : null;
-      for (let i = 0; i < items.length; ++i) {
-        const start = current ? current.toTimeString().slice(0, 5) : "";
-        result.push(
-          `| ${start} | ${items[i].name} | ${items[i].durationInMinutes} |`
-        );
-        if (current)
-          current = new Date(
-            current.getTime() + items[i].durationInMinutes * 60000
-          );
-      }
-      return `| 開始時刻 | 名前 | 所要時間(分) |\n|----------|------|--------------|\n${result.join(
-        "\n"
-      )}`;
-    }, [date, time, items]);
+    const markdownText = React.useMemo(
+      () =>
+        formatEventMarkdown({
+          name,
+          startDate: combineDateAndTime(date, time),
+          items,
+        }),
+      [name, date, time, items]
+    );
 
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
