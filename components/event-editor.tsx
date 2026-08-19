@@ -4,7 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { EventData, TimetableItem } from "@/models/event";
 import { Users } from "lucide-react";
-import EventImportDialog from "@/components/event-import-dialog";
+import EventImportDialog, {
+  EventImportFormat,
+} from "@/components/event-import-dialog";
 import EventExportDialog from "@/components/event-export-dialog";
 import { useRouter } from "next/navigation";
 import SortableTimetableItem from "@/components/sortable-timetable-item";
@@ -12,6 +14,10 @@ import { EventForm } from "@/components/event-form";
 import { TimetableList } from "@/components/timetable-list";
 import { arrayMove } from "@dnd-kit/sortable";
 import type { DragEndEvent } from "@dnd-kit/core";
+import {
+  parseEventMarkdown,
+  type ParsedEventMarkdown,
+} from "@/lib/eventMarkdown";
 
 function generateId() {
   return Math.random().toString(36).slice(2, 10);
@@ -67,6 +73,7 @@ export function EventEditor({
     null
   );
   const [importDialogOpen, setImportDialogOpen] = useState(false);
+  const [importFormat, setImportFormat] = useState<EventImportFormat>("json");
   const [importText, setImportText] = useState("");
   const [importError, setImportError] = useState<string | null>(null);
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
@@ -126,6 +133,62 @@ export function EventEditor({
     });
   };
 
+  const applyImported = (imported: ParsedEventMarkdown) => {
+    if (imported.name) setName(imported.name);
+    if (imported.startDate) setDate(imported.startDate);
+    if (imported.startTime) setTime(imported.startTime);
+    setItems(imported.items);
+    setImportDialogOpen(false);
+    setImportText("");
+  };
+
+  const handleImport = () => {
+    setImportError(null);
+
+    if (importFormat === "markdown") {
+      let parsed: ParsedEventMarkdown;
+      try {
+        parsed = parseEventMarkdown(importText);
+      } catch (error) {
+        setImportError(
+          error instanceof Error
+            ? error.message
+            : "Markdownの読み取りに失敗しました"
+        );
+        return;
+      }
+      applyImported(parsed);
+      return;
+    }
+
+    let data: Partial<{
+      name: string;
+      startDate: string;
+      items: TimetableItem[];
+    }>;
+    try {
+      data = JSON.parse(importText);
+    } catch {
+      setImportError("JSONのパースに失敗しました");
+      return;
+    }
+    if (!data.name || !data.startDate || !Array.isArray(data.items)) {
+      setImportError("必要なフィールド(name, startDate, items)がありません");
+      return;
+    }
+    const startDate = new Date(data.startDate);
+    if (Number.isNaN(startDate.getTime())) {
+      setImportError("startDateを日時として読み取れません");
+      return;
+    }
+    applyImported({
+      name: data.name,
+      startDate,
+      startTime: startDate.toTimeString().slice(0, 5),
+      items: data.items,
+    });
+  };
+
   const handleSubmit = (_: React.FormEvent) => {
     _.preventDefault();
     const startDate = combineDateAndTime(date, time);
@@ -179,37 +242,16 @@ export function EventEditor({
               </Button>
               <EventImportDialog
                 open={importDialogOpen}
+                format={importFormat}
                 importText={importText}
                 importError={importError}
                 onOpenChange={setImportDialogOpen}
-                onTextChange={setImportText}
-                onImport={() => {
+                onFormatChange={(format) => {
+                  setImportFormat(format);
                   setImportError(null);
-                  try {
-                    const data = JSON.parse(importText);
-                    if (
-                      !data.name ||
-                      !data.startDate ||
-                      !Array.isArray(data.items)
-                    ) {
-                      setImportError(
-                        "必要なフィールド(name, startDate, items)がありません"
-                      );
-                      return;
-                    }
-                    setName(data.name);
-                    setDate(new Date(data.startDate));
-                    setTime(() => {
-                      const d = new Date(data.startDate);
-                      return d.toTimeString().slice(0, 5);
-                    });
-                    setItems(data.items);
-                    setImportDialogOpen(false);
-                    setImportText("");
-                  } catch {
-                    setImportError("JSONのパースに失敗しました");
-                  }
                 }}
+                onTextChange={setImportText}
+                onImport={handleImport}
                 onCancel={() => {
                   setImportDialogOpen(false);
                   setImportText("");
